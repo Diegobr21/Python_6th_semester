@@ -108,7 +108,7 @@ menubar.add_cascade(label='Help', menu=helpmenu)
 
 textbox=Text(root)
 textbox.pack (fill= 'both', expand=1)
-textbox.config(bd=0, padx=5, pady=3, font=('Consolas', 12), fg='white', bg='black')
+textbox.config(bd=0, padx=5, pady=3, font=('Courier New', 12), fg='white', bg='black')
 
 mssg=StringVar()
 mssg.set('Welcome!')
