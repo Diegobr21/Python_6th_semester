@@ -1,3 +1,8 @@
+import time
+
+def merge(list1, list2):
+    merged_list=tuple(zip(list1, list2))
+    return merged_list
 
 def select_heuristic():
     try:    
@@ -5,50 +10,60 @@ def select_heuristic():
         if select < 4 and select > 0:
             print('Your choice was made:', select)    
             #if 1 if 2 if 3 function()
+            x=0    
+            lv=[]
+            lw=[]
+            lr=[]
+            for e in list_elements[1:]:        
+                x=x+1
+                lv.append(list_elements[x][1])
+                lw.append(list_elements[x][2])  
+
+                
+
+            
+            for i in range(len(lv)):
+                lv[i]=int(lv[i])
+                lw[i]=int(lw[i])
+
+            le=merge(lv,lw)
+
+            for i in range(len(lw)):        
+                lr.append((lv[i])/(lw[i]))
         else:
             print('Your choice wasn´t inside the parameters')
 
     except:
         print('Your choice wasn´t understood')
     if select==1:
-        pick_greatest_value(list_elements,w)
+        t1=time.time()
+        pick_greatest_value(w,lv,le)
+        t2=time.time()
+        print(t2-t1)
     elif select==2:
-        pick_lower_weight(list_elements,w)
+        t1=time.time()
+        pick_lower_weight(w,lw,le)
+        t2=time.time()
+        print(t2-t1)
     elif select==3:
-        pick_biggest_ratio(list_elements,w)    
+        t1=time.time()
+        pick_biggest_ratio(w,lr,le) 
+        t2=time.time()
+        print(t2-t1)   
     
 
-def merge(list1, list2):
-    merged_list=tuple(zip(list1, list2))
-    return merged_list
 
-def pick_greatest_value(elements,w):
-    n=0
-    lv=[]
-    lw=[]
-    le=[]
+
+def pick_greatest_value(w,lv,le):
+    set_v=[]
     
     w=float(w)
-           
-    for e in elements[1:]:        
-        n=n+1
-        lv.append(elements[n][1])
-        lw.append(elements[n][2])       
-
-        
-    set_v=[]
-    for i in range(len(lv)):
-        lv[i]=int(lv[i])
-        lw[i]=int(lw[i])
-
-    le=merge(lv,lw)
-
-    lvsorted=lv
-    lvsorted.sort()
+    
+    lvsorted=sorted(lv)
     #print('Both:', lvsorted)
     sumvalues=0
-    for j in range(n):
-        for i in range(n):
+    for j in range(len(le)):
+        for i in range(len(lv)):
             if le[i][0]==lvsorted[-1] and le[i][1] <= w: # and i not in set_v:
                 set_v.append(i)
                 sumvalues+=le[i][0]
@@ -64,34 +79,17 @@ def pick_greatest_value(elements,w):
     print('sum of values chosen',sumvalues) 
     return sumvalues  
 
-def pick_lower_weight(elements, w):
-    n=0
-    lv=[]
-    lw=[]
-    le=[]
-    
+def pick_lower_weight(w,lw,le):    
     w=float(w)
-           
-    for e in elements[1:]:
-        n=n+1
-        lv.append(elements[n][1])
-        lw.append(elements[n][2])       
-
     set_v= []
-    for i in range(len(lv)):
-        lv[i]=int(lv[i])
-        lw[i]=int(lw[i])
 
-    le=merge(lv,lw)
-
-    lwsorted=lw
-    lwsorted.sort(reverse=True)
+    lwsorted=sorted(lw, reverse=True)
     #print('sorted list:', lwsorted)
-    #print(le)
+    #print(le)   
     
     sumvalues=0
     
-    for j in range(n):
+    for j in range(len(le)):
         for i in range(len(lwsorted)):
             if le[i][1]==lwsorted[-1] and lwsorted[-1] <= w: #and i not in set_v:            
                 set_v.append(i)
@@ -108,41 +106,16 @@ def pick_lower_weight(elements, w):
     print('sum of values chosen',sumvalues)
     return sumvalues     
 
-def pick_biggest_ratio(elements,w):
-    n=0
-    lv=[]
-    lw=[]
-    le=[]
-    lr=[]
-    lrsorted=[]
-    set_v= set()
-    
+def pick_biggest_ratio(w,lr,le):
+    #n=len(le)
     w=float(w)
-           
-    for e in elements[1:]:        
-        n=n+1
-        lv.append(elements[n][1])
-        lw.append(elements[n][2])   
+    set_v= set()
 
-        
-    for i in range(len(lv)):
-        lv[i]=int(lv[i])
-        lw[i]=int(lw[i])
-
-    le=merge(lv,lw)
-
-    for i in range(len(lw)):        
-        lr.append((lv[i])/(lw[i]))
-        lrsorted.append((lv[i])/(lw[i]))
-    
     #lrsorted.sort()
     lrsorted = sorted(lr)
-    
-    #print(lr)
-    
     sumvalues=0
     
-    for j in range(n):
+    for j in range(len(le)):
         for i in range(len(lr)):            
             if lr[i] == lrsorted[-1] and le[i][1] <= w and i not in set_v:            
                 set_v.add(i)
@@ -154,6 +127,8 @@ def pick_biggest_ratio(elements,w):
                 #print('Capacity left:',w)
                 w=0
                 break
+                break
+
 
     #print('index of values chosen',set_v)
     #print('sorted list:', lrsorted)
@@ -163,14 +138,32 @@ def pick_biggest_ratio(elements,w):
     #################################################################
 
 
-
 def select_from_gui(select):
+    x=0    
+    lv=[]
+    lw=[]
+    lr=[]
+    for e in list_elements[1:]:        
+        x=x+1
+        lv.append(list_elements[x][1])
+        lw.append(list_elements[x][2])    
+
+            
+    for i in range(len(lv)):
+        lv[i]=int(lv[i])
+        lw[i]=int(lw[i])
+
+    le=merge(lv,lw)
+
+    for i in range(len(lw)):        
+        lr.append((lv[i])/(lw[i]))
+
     if select==1:
-        result= pick_greatest_value(list_elements,w)
+        result= pick_greatest_value(w,lv,le)
     elif select==2:
-        result= pick_lower_weight(list_elements,w)
+        result= pick_lower_weight(w,lw,le)
     elif select==3:
-        result= pick_biggest_ratio(list_elements,w)
+        result= pick_biggest_ratio(w,lr,le)
     return result
 
 try:
@@ -182,6 +175,7 @@ try:
     #list of tuples
     n=list_elements[0][0]
     w=list_elements[0][1]
+
     print('Instance received')
     print("The instance received contains "+ n + " elements \nThe capacity of the knapsack is:", w)
     print('\n')
@@ -192,7 +186,8 @@ try:
         choice=2
     if choice ==1:
         print('got it, bye')
-    elif choice==2:       
+    elif choice==2:        
+
         select_heuristic()
     else:
         print('option not recognized')

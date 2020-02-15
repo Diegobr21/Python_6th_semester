@@ -6,7 +6,7 @@ try:
     vmax=int(input('Greatest value possible for values of elements: '))
     wmin=int(input('Smallest weight possible for weight of elements: '))
     wmax=int(input('Greatest weight possible for weight of elements: '))
-    if wmax > wmin and vmax > vmin:
+    if wmax > wmin and vmax > vmin and vmin >0 and vmax >0 and wmin >0 and wmax >0:
         print('input successful')
         w=n*((wmin + wmax)/2)*0.4
         with open('instancia.txt', 'w') as f:    
