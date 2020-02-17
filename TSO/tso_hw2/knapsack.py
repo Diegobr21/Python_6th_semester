@@ -35,24 +35,22 @@ def select_heuristic():
 
     except:
         print('Your choice wasn´t understood')
-    if select==1:
+    if select == 1:
         t1=time.time()
         pick_greatest_value(w,lv,le)
         t2=time.time()
-        print(t2-t1)
-    elif select==2:
+        print(f"Execution time(heuristic only): {t2-t1}s ")
+    elif select == 2:
         t1=time.time()
         pick_lower_weight(w,lw,le)
         t2=time.time()
-        print(t2-t1)
-    elif select==3:
+        print(f"Execution time(heuristic only): {t2-t1}s ")
+    elif select == 3:        
         t1=time.time()
         pick_biggest_ratio(w,lr,le) 
         t2=time.time()
-        print(t2-t1)   
+        print(f"Execution time(heuristic only): {t2-t1}s ")  
     
-
-
 
 def pick_greatest_value(w,lv,le):
     set_v=[]
@@ -64,7 +62,7 @@ def pick_greatest_value(w,lv,le):
     sumvalues=0
     for j in range(len(le)):
         for i in range(len(lv)):
-            if le[i][0]==lvsorted[-1] and le[i][1] <= w: # and i not in set_v:
+            if le[i][0] == lvsorted[-1] and le[i][1] <= w: # and i not in set_v:
                 set_v.append(i)
                 sumvalues+=le[i][0]
                 lvsorted.pop()
@@ -79,9 +77,10 @@ def pick_greatest_value(w,lv,le):
     print('sum of values chosen',sumvalues) 
     return sumvalues  
 
+
 def pick_lower_weight(w,lw,le):    
     w=float(w)
-    set_v= []
+    set_v= set()
 
     lwsorted=sorted(lw, reverse=True)
     #print('sorted list:', lwsorted)
@@ -91,8 +90,8 @@ def pick_lower_weight(w,lw,le):
     
     for j in range(len(le)):
         for i in range(len(lwsorted)):
-            if le[i][1]==lwsorted[-1] and lwsorted[-1] <= w: #and i not in set_v:            
-                set_v.append(i)
+            if le[i][1] == lwsorted[-1] and lwsorted[-1] <= w: #and i not in set_v:            
+                set_v.add(i)
                 sumvalues+=le[i][0]
                 w = w - (lwsorted[-1])
                 lwsorted.pop()
@@ -117,7 +116,7 @@ def pick_biggest_ratio(w,lr,le):
     
     for j in range(len(le)):
         for i in range(len(lr)):            
-            if lr[i] == lrsorted[-1] and le[i][1] <= w and i not in set_v:            
+            if lr[i] == lrsorted[-1] and le[i][1] <= w: #and i not in set_v:            
                 set_v.add(i)
                 sumvalues+=le[i][0]
                 w = w - (le[i][1])
@@ -158,12 +157,12 @@ def select_from_gui(select):
     for i in range(len(lw)):        
         lr.append((lv[i])/(lw[i]))
 
-    if select==1:
-        result= pick_greatest_value(w,lv,le)
-    elif select==2:
-        result= pick_lower_weight(w,lw,le)
-    elif select==3:
-        result= pick_biggest_ratio(w,lr,le)
+    if select == 1:
+        result = pick_greatest_value(w,lv,le)
+    elif select == 2:
+        result = pick_lower_weight(w,lw,le)
+    elif select == 3:
+        result = pick_biggest_ratio(w,lr,le)
     return result
 
 try:
@@ -181,12 +180,12 @@ try:
     print('\n')
     print('Enter 1, 2 or 3 to pick the corresponding heuristic\n1)Pick greatest value\n2)Pick lower weight\n3)Pick biggest ratio(Vi/Wi)\n')
     try:
-        choice=int(input('Are you trying to use the GUI?\n1)YES 2)NO(any other character will keep you at the cmd)\n'))
+        choice = int(input('Are you trying to use the GUI?\n1)YES 2)NO(any other character will keep you at the cmd)\n'))
     except:
-        choice=2
-    if choice ==1:
+        choice = 2
+    if choice == 1:
         print('got it, bye')
-    elif choice==2:        
+    elif choice == 2:        
 
         select_heuristic()
     else:
