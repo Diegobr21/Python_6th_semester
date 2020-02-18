@@ -16,15 +16,8 @@ def select_heuristic():
             lr=[]
             for e in list_elements[1:]:        
                 x=x+1
-                lv.append(list_elements[x][1])
-                lw.append(list_elements[x][2])  
-
-                
-
-            
-            for i in range(len(lv)):
-                lv[i]=int(lv[i])
-                lw[i]=int(lw[i])
+                lv.append(int(list_elements[x][1]))
+                lw.append(int(list_elements[x][2]))            
 
             le=merge(lv,lw)
 
@@ -35,6 +28,7 @@ def select_heuristic():
 
     except:
         print('Your choice wasn´t understood')
+
     if select == 1:
         t1=time.time()
         pick_greatest_value(w,lv,le)
@@ -132,10 +126,7 @@ def pick_biggest_ratio(w,lr,le):
     #print('index of values chosen',set_v)
     #print('sorted list:', lrsorted)
     print('sum of values chosen',sumvalues) 
-    return sumvalues
-
-    #################################################################
-
+    return sumvalues  
 
 def select_from_gui(select):
     x=0    
@@ -165,12 +156,13 @@ def select_from_gui(select):
         result = pick_biggest_ratio(w,lr,le)
     return result
 
+################################################################# START ##########################
 try:
     with open('instancia.txt', 'r') as f:
         data = f.read().splitlines()
     list_elements=[]
     for e in data:
-        list_elements.append(tuple(e.split()))
+        list_elements.append(tuple(e.split())) #.split()= each space represents another element of the tuple
     #list of tuples
     n=list_elements[0][0]
     w=list_elements[0][1]
@@ -185,8 +177,7 @@ try:
         choice = 2
     if choice == 1:
         print('got it, bye')
-    elif choice == 2:        
-
+    elif choice == 2:   
         select_heuristic()
     else:
         print('option not recognized')
@@ -194,4 +185,3 @@ try:
 except:
     print('Instance not received')
 
-#pick_biggest_ratio(list_elements,w)
