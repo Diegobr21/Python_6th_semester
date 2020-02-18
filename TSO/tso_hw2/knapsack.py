@@ -50,22 +50,21 @@ def pick_greatest_value(w,lv,le):
     set_v=[]
     
     w=float(w)
-    
-    lvsorted=sorted(lv)
+    #print(le)
+    lvsorted=sorted(le, key=lambda i: i[0], reverse=True)
     #print('Both:', lvsorted)
     sumvalues=0
-    for j in range(len(le)):
-        for i in range(len(lv)):
-            if le[i][0] == lvsorted[-1] and le[i][1] <= w: # and i not in set_v:
-                set_v.append(i)
-                sumvalues+=le[i][0]
-                lvsorted.pop()
-                
-                w = w - (le[i][1])
-            elif le[i][1] > w:
-                #print('Capacity left:',w)
-                w=0     
-                break    
+    
+    for i in range(len(le)):
+        if lvsorted[i][1] <= w:
+            set_v.append(i)
+            sumvalues+=lvsorted[i][0]
+            w = w - (lvsorted[i][1]) 
+            
+        elif lvsorted[i][1] > w:
+                    
+            break 
+
 
     #print('index of values chosen',set_v)
     print('sum of values chosen',sumvalues) 
@@ -76,52 +75,52 @@ def pick_lower_weight(w,lw,le):
     w=float(w)
     set_v= set()
 
-    lwsorted=sorted(lw, reverse=True)
+    lwsorted=sorted(le, key=lambda i: i[1], reverse=False)
     #print('sorted list:', lwsorted)
-    #print(le)   
+    #print(lwsorted)   
     
     sumvalues=0
     
-    for j in range(len(le)):
-        for i in range(len(lwsorted)):
-            if le[i][1] == lwsorted[-1] and lwsorted[-1] <= w: #and i not in set_v:            
-                set_v.add(i)
-                sumvalues+=le[i][0]
-                w = w - (lwsorted[-1])
-                lwsorted.pop()
+    for i in range(len(lw)):
+        
+        if lwsorted[i][1] <= w: #and i not in set_v:            
+            set_v.add(i)
+            sumvalues+=lwsorted[i][0]
+            w = w - (lwsorted[i][1])            
                 
-            elif lwsorted[-1] > w:
-                #print('Capacity left:',w)
-                w=0
-                break
+        elif lwsorted[i][1] > w:
+            #print('Capacity left:',w)
+            w=0
+            break
 
     #print('index of values chosen',set_v)
     print('sum of values chosen',sumvalues)
     return sumvalues     
 
 def pick_biggest_ratio(w,lr,le):
-    #n=len(le)
     w=float(w)
     set_v= set()
 
-    #lrsorted.sort()
-    lrsorted = sorted(lr)
+    #lr=sorted(lr,reverse=True)
+    #lrsorted=sorted(le, key=lambda i: i[1], reverse=False)
+    lrsorted2=merge(lr,le)
+    lrsorted=sorted(lrsorted2, key=lambda i: i[0], reverse=True)
+    #print('hdhd:', lrsorted)
     sumvalues=0
     
-    for j in range(len(le)):
-        for i in range(len(lr)):            
-            if lr[i] == lrsorted[-1] and le[i][1] <= w: #and i not in set_v:            
-                set_v.add(i)
-                sumvalues+=le[i][0]
-                w = w - (le[i][1])
-                lrsorted.pop()
-                
-            elif le[i][1] > w:
-                #print('Capacity left:',w)
-                w=0
-                break
-                break
-
+    
+    
+    for i in range(len(lr)):            
+        if  lrsorted[i][1][1] <=w:                  
+            set_v.add(i)
+            sumvalues+=lrsorted[i][1][0]
+            w = w - (lrsorted[i][1][1])
+        elif lrsorted[i][1][1] > w:
+            #print('Capacity left:',w)            
+            break
+                           
+            
+        
 
     #print('index of values chosen',set_v)
     #print('sorted list:', lrsorted)
@@ -160,6 +159,7 @@ def select_from_gui(select):
 try:
     with open('instancia.txt', 'r') as f:
         data = f.read().splitlines()
+        f.close()
     list_elements=[]
     for e in data:
         list_elements.append(tuple(e.split())) #.split()= each space represents another element of the tuple

@@ -1,0 +1,5 @@
+Instructions to operate:
+1) Run generador_instancia.py, to create an instance
+2) Run either  knapsack.py or gui.py
+ a)knapsack.py shows the time of execution and runs on the cmd
+ b)gui.py shows an graphic user interface 
