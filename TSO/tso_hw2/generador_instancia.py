@@ -8,13 +8,28 @@ try:
     wmax=int(input('Greatest weight possible for weight of elements: '))
     if wmax > wmin and vmax > vmin and vmin >0 and vmax >0 and wmin >0 and wmax >0:
         print('input successful')
-        w=n*((wmin + wmax)/2)*0.4
-        with open('instancia.txt', 'w') as f:    
-            f.write('%r %r' % (n, w))
-            f.write('\n')
-            for i in range(n):
-                f.write('%r %r %r' % (i, random.randint(vmin, vmax), random.randint(wmin, wmax)))
+        w=n*((wmin + wmax)/2)*0.3
+                    
+        filename=input('Enter a filename or press Enter to leave it as instancia: ')
+        if len(filename) != 0:
+            filename+='.txt'
+        
+        else:
+            filename=' '
+        if filename!=' ':
+            with open(filename,'w') as f:
+                f.write('%r %r' % (n, w))
                 f.write('\n')
+                for i in range(n):
+                    f.write('%r %r %r' % (i, random.randint(vmin, vmax), random.randint(wmin, wmax)))
+                    f.write('\n')
+        else:
+            with open('instancia.txt', 'w') as f:    
+                f.write('%r %r' % (n, w))
+                f.write('\n')
+                for i in range(n):
+                    f.write('%r %r %r' % (i, random.randint(vmin, vmax), random.randint(wmin, wmax)))
+                    f.write('\n')
             
     else:
         print('input failed')

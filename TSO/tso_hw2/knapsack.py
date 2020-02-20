@@ -1,4 +1,6 @@
 import time
+import os
+from os.path import dirname
 
 def merge(list1, list2):
     merged_list=tuple(zip(list1, list2))
@@ -155,21 +157,44 @@ def select_from_gui(select):
         result = pick_biggest_ratio(w,lr,le)
     return result
 
-################################################################# START ##########################
+############################################### START ############################################
+print('.txt files in directory\n')
+for file in os.listdir(dirname(os.path.realpath(__file__))):#os.path.realpath(__file__)
+    if file.endswith(".txt"):
+        print(f"* {file} ")
+print('\n')
 try:
+    filename=input('Enter a filename or press Enter to leave it as instancia: ')
+    if len(filename) != 0:
+        filename+='.txt'
+except:
+    filename=' '
+
+if len(filename) == 0:    
     with open('instancia.txt', 'r') as f:
         data = f.read().splitlines()
-        f.close()
+        f.close()   
+
+elif filename != ' ':
+    try:
+        with open(filename, 'r') as f:
+            data = f.read().splitlines()
+            f.close()
+    except:
+        print('Instance not received')
+
+try:      
     list_elements=[]
     for e in data:
         list_elements.append(tuple(e.split())) #.split()= each space represents another element of the tuple
     #list of tuples
     n=list_elements[0][0]
-    w=list_elements[0][1]
+    w=list_elements[0][1] 
 
     print('Instance received')
     print("The instance received contains "+ n + " elements \nThe capacity of the knapsack is:", w)
     print('\n')
+    n=int(n)
     print('Enter 1, 2 or 3 to pick the corresponding heuristic\n1)Pick greatest value\n2)Pick lower weight\n3)Pick biggest ratio(Vi/Wi)\n')
     try:
         choice = int(input('Are you trying to use the GUI?\n1)YES 2)NO(any other character will keep you at the cmd)\n'))
@@ -181,7 +206,5 @@ try:
         select_heuristic()
     else:
         print('option not recognized')
-       
 except:
-    print('Instance not received')
-
+    print('data not processed')

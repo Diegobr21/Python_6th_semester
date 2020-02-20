@@ -1,5 +1,4 @@
 Instructions to operate:
-1) Run generador_instancia.py, to create an instance
-2) Run either  knapsack.py or gui.py
- a)knapsack.py shows the time of execution and runs on the cmd
- b)gui.py shows an graphic user interface 
+1) Run generador_instancia.py, to create an instance, default filename is instancia.txt
+2) Run   knapsack.py 
+3) gui.py for a graphic user interface and to run all 3 heuristics at the same time
