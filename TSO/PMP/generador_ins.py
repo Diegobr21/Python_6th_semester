@@ -37,7 +37,5 @@ if dmin < dmax and dmin > 0 and dmax > 0 and p <= m and m > 0:
                 f.write('\n')
             f.close()
             
-        
 else:
     print('input failed')
-        
