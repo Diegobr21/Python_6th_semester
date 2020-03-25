@@ -8,36 +8,16 @@ def merge(list1, list2):
     merged_list=tuple(zip(list1, list2))
     return merged_list
 
-def random_start(m,p,n):
-    x=0
-    dist_ij=[]
-    for e in data[1:]:        
-        x=x+1
-        dist_ij.append(data[x])
-   
-    dij=[]
-    for e in dist_ij:
-        dij.append(tuple(map(int, e.split())))
-
+def random_start():
     list_facilities=[]
     for i in range(m):
         list_facilities.append(i)
     F=random.sample(list_facilities, p)
-    print('Objective function with random start',calculate_distance(m,n,dij,F))
+    print('Objective function with random start',calculate_distance(F))
     return F
 
 
-def greedy_start(m,n,p):
-    x=0
-    dist_ij=[]
-    for e in data[1:]:        
-        x=x+1
-        dist_ij.append(data[x])
-   
-    dij=[]
-    for e in dist_ij:
-        dij.append(tuple(map(int, e.split())))
-    #print(dij)
+def greedy_start():
     listmin=[]
     listmax=[]
     for i in range(len(dij)):
@@ -64,10 +44,10 @@ def greedy_start(m,n,p):
     F=[]
     for i in range(p):
         F.append(irsorted[i][0])
-    print('Objective function with Greedy start', calculate_distance(m,n,dij,F))
+    print('Objective function with Greedy start', calculate_distance(F))
     return F
 
-def calculate_distance(m,n,dij,F):
+def calculate_distance(F):
     new_dij=[]
     for e in dij:
         new_dij.append(e[1:])
@@ -108,6 +88,16 @@ def calculate_distance(m,n,dij,F):
     #print(totdist)
 
     return totdist
+
+def vertex_substitution():
+    Facilities = greedy_start()
+    res_actual=calculate_distance(Facilities)
+    print(Facilities)
+    #1)Encontrar el nodo que mas distancia añada y tratar de cambiarlo por uno mejor 
+    #1)Puede hacer suma de distancias por facility y el que más tenga dentro de F cambiarlo por uno mejor, evaluar objective function y substituirlo en F si si
+    #2)Cambiar los round(p/2) peores nodos de F, por facilities random no incluidas ya,
+    #2) evaluar si es mejor resultado, si no, repetir hasta que sea mejor o hasta que haya dado m iteraciones 
+    # f
 
 #*-------------------------------------------------------------------------------------------------------------*#
 print('.txt files in directory\n')
@@ -151,8 +141,19 @@ m=int(m)
 n=int(n)
 p=int(p)
 
-F=greedy_start(m,n,p)
-Fr= random_start(m,p,n)
+x=0
+dist_ij=[]
+for e in data[1:]:        
+    x=x+1
+    dist_ij.append(data[x])
+   
+dij=[]
+for e in dist_ij:
+    dij.append(tuple(map(int, e.split())))
+
+F=greedy_start()
+Fr= random_start()
 print('GS',F)
 print('RS',Fr)
+#vertex_substitution()
     
