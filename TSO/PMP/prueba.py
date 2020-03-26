@@ -93,11 +93,58 @@ def vertex_substitution():
     Facilities = greedy_start()
     res_actual=calculate_distance(Facilities)
     print(Facilities)
-    #1)Encontrar el nodo que mas distancia añada y tratar de cambiarlo por uno mejor 
+    #1)Encontrar el nodo que mas distancia añada dentro de F y tratar de cambiarlo por uno mejor 
     #1)Puede hacer suma de distancias por facility y el que más tenga dentro de F cambiarlo por uno mejor, evaluar objective function y substituirlo en F si si
     #2)Cambiar los round(p/2) peores nodos de F, por facilities random no incluidas ya,
     #2) evaluar si es mejor resultado, si no, repetir hasta que sea mejor o hasta que haya dado m iteraciones 
-    # f
+    # 1)
+    list_sum_dij=[]
+    
+    #Sum for each to facility to all customers
+    for i in range(len(dij)):
+        list_sum_dij.append( sum(dij[i])-i )
+
+    ind=[i for i in range(m)]
+    #List of sums with index
+    listsumindex= merge(ind, list_sum_dij)
+    #From smallest to greatest sum
+    lsum=sorted(listsumindex, key=lambda i: i[1], reverse=False)
+    distances_F=[]
+    for i in range(len(listsumindex)):
+        if listsumindex[i][0] in Facilities:
+            distances_F.append(listsumindex[i])
+    dist_F_sorted=sorted(distances_F, key=lambda i: i[1], reverse=True)
+    
+    pseudo_F=Facilities.copy()
+  
+    #?Vertex Substitution 
+    for i in range(len(dist_F_sorted)):
+        for j in range(len(lsum)):
+            if lsum[j][0] not in pseudo_F:
+                if lsum[j][1] < dist_F_sorted[i][1]:
+                    index=Facilities.index(dist_F_sorted[i][0])
+                    pseudo_F.pop(index)
+                    pseudo_F.insert(index, lsum[j][0])
+                    if calculate_distance(pseudo_F) > res_actual:
+                        pseudo_F.pop(index)
+                        pseudo_F.insert(index, dist_F_sorted[i][0])
+
+    #?------------------------
+    res_nuevo=calculate_distance(pseudo_F)   
+    #print('Res: ', res_nuevo) 
+    if len(set(pseudo_F)) == len(Facilities) and res_nuevo < res_actual:
+        print('Objective Function After VS: ', res_nuevo) 
+        print('After VS',pseudo_F) 
+        return pseudo_F
+    else:
+        print('Could not be improved: ', res_actual)
+        print('The same facilities opened after trying VS: ',Facilities)  
+        return Facilities
+
+    #print('All facilities: ', lsum)
+    #print(distances_F)
+    #print(dist_F_sorted)
+
 
 #*-------------------------------------------------------------------------------------------------------------*#
 print('.txt files in directory\n')
@@ -151,9 +198,8 @@ dij=[]
 for e in dist_ij:
     dij.append(tuple(map(int, e.split())))
 
-F=greedy_start()
-Fr= random_start()
-print('GS',F)
-print('RS',Fr)
-#vertex_substitution()
+
+print(random_start())
+
+vertex_substitution()
     
