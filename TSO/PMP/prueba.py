@@ -95,9 +95,9 @@ def vertex_substitution():
     print(Facilities)
     #1)Encontrar el nodo que mas distancia añada dentro de F y tratar de cambiarlo por uno mejor 
     #1)Puede hacer suma de distancias por facility y el que más tenga dentro de F cambiarlo por uno mejor, evaluar objective function y substituirlo en F si si
-    #2)Cambiar los round(p/2) peores nodos de F, por facilities random no incluidas ya,
-    #2) evaluar si es mejor resultado, si no, repetir hasta que sea mejor o hasta que haya dado m iteraciones 
-    # 1)
+    #2)Cambiar los peores nodos de F, por facilities mejores en suma de distancias y que no estén incluidas ya,
+    #2) evaluar si es mejor resultado(obj function), si no, repetir hasta que no sea mejor o hasta que haya dado m iteraciones 
+    
     list_sum_dij=[]
     
     #Sum for each to facility to all customers
@@ -114,10 +114,14 @@ def vertex_substitution():
         if listsumindex[i][0] in Facilities:
             distances_F.append(listsumindex[i])
     dist_F_sorted=sorted(distances_F, key=lambda i: i[1], reverse=True)
-    
-    pseudo_F=Facilities.copy()
+    print(dist_F_sorted)
+    pseudo_F=[]
+    for e in Facilities:
+        pseudo_F.append(e)
+    F2=list(Facilities)
   
     #?Vertex Substitution 
+    """
     for i in range(len(dist_F_sorted)):
         for j in range(len(lsum)):
             if lsum[j][0] not in pseudo_F:
@@ -128,8 +132,41 @@ def vertex_substitution():
                     if calculate_distance(pseudo_F) > res_actual:
                         pseudo_F.pop(index)
                         pseudo_F.insert(index, dist_F_sorted[i][0])
-
+    """
     #?------------------------
+    #!2nd VS----------------------
+    keep=True
+    Neighbors=[]
+    evaluation_Neighbors=[]
+    print(pseudo_F)
+    while keep:
+        pseudo_F=list(F2)
+        for i in range(len(lsum)):
+            if lsum[i][0] not in pseudo_F and lsum[i][0] < dist_F_sorted[0][0]:
+                index = pseudo_F.index(dist_F_sorted[0][0])
+                pseudo_F.pop(index)
+                pseudo_F.insert(index, lsum[i][0])
+                Neighbors.append(pseudo_F)
+                pseudo_F=list(F2)
+
+        for e in Neighbors:
+            evaluation_Neighbors.append(calculate_distance(e))
+        indexmin = evaluation_Neighbors.index(min(evaluation_Neighbors))
+        if evaluation_Neighbors[indexmin] < res_actual:
+            F2=list(Neighbors[indexmin])
+
+            for i in range(len(listsumindex)):
+                if listsumindex[i][0] in F2:
+                    distances_F.append(listsumindex[i])
+            dist_F_sorted=sorted(distances_F, key=lambda i: i[1], reverse=True)
+        else:
+            keep=False
+    print('Test F2', F2)
+    res_f2=calculate_distance(F2)
+    print('Test ObFun F2', res_f2)
+
+    #!------------------------------
+    """
     res_nuevo=calculate_distance(pseudo_F)   
     #print('Res: ', res_nuevo) 
     if len(set(pseudo_F)) == len(Facilities) and res_nuevo < res_actual:
@@ -140,7 +177,7 @@ def vertex_substitution():
         print('Could not be improved: ', res_actual)
         print('The same facilities opened after trying VS: ',Facilities)  
         return Facilities
-
+    """
     #print('All facilities: ', lsum)
     #print(distances_F)
     #print(dist_F_sorted)
