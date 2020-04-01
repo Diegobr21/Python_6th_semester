@@ -59,7 +59,7 @@ def calculate_distance(F):
     #V[0]=distances from customer 0 to every facility 
     list_index_in_F_closest=[]
     liFc=[]
-    #!For the ones on F which one is closer to you
+    #!For the ones on F which one is closer to you(customer)
     V2=[[] for i in range(n)]
     for i in range(len(V)):
         for j in F:
@@ -114,13 +114,6 @@ def vertex_substitution():
         if listsumindex[i][0] in Facilities:
             distances_F.append(listsumindex[i])
     dist_F_sorted=sorted(distances_F, key=lambda i: i[1], reverse=True)
-    """
-    dist_F_noindex=[]
-    for e in distances_F:
-        dist_F_noindex.append(e[1])
-
-    print('No index',dist_F_noindex)
-    """
 
     pseudo_F=[]
     for e in Facilities:
@@ -150,10 +143,9 @@ def vertex_substitution():
     Neighbors=[]
     evaluation_Neighbors=[]
     while keep:
-        #pseudo_F=list(F2)
         Neighbors.clear()
         evaluation_Neighbors.clear()
-        #changes=0
+        
         for i in range(len(lsum)):
             if lsum[i][0] not in pseudo_F and lsum[i][1] < dist_F_sorted[0][1]:
                 print('cumplido, dFs[0][1]: ', dist_F_sorted[0][1])
@@ -163,7 +155,6 @@ def vertex_substitution():
                 print(f'{i} pseudoF:' , pseudo_F)
                 Neighbors.append(list(pseudo_F))
                 print('N(X)',Neighbors)
-                #changes+=1
                 distances_F.clear()
                 dist_F_sorted.clear()
                 for i in range(len(listsumindex)):
@@ -171,17 +162,7 @@ def vertex_substitution():
                         distances_F.append(listsumindex[i])
                 dist_F_sorted=sorted(distances_F, key=lambda i: i[1], reverse=True)
                 #print(dist_F_sorted)
-            #If no changes were made, a random change will be made
-            """
-            if changes < 1:
-                ir = random.randint(0,p-1)
-                pseudo_F.pop(ir)
-                for i in range(len(lsum)):
-                    if lsum[i][0] not in pseudo_F:
-                        pseudo_F.insert(ir, lsum[i][0])
-                        Neighbors.append(pseudo_F)
-                changes+=1
-            """
+            
                 #print(dist_F_sorted)
                 #pseudo_F=list(F2)
         if len(Neighbors) > 0:    
@@ -189,14 +170,32 @@ def vertex_substitution():
                 evaluation_Neighbors.append(calculate_distance(e))
             indexmin = evaluation_Neighbors.index(min(evaluation_Neighbors))
             if evaluation_Neighbors[indexmin] < res_actual:
+                res_actual= evaluation_Neighbors[indexmin]
                 F2=list(Neighbors[indexmin])
                 pseudo_F=list(F2)
-                #print('New F:             \n\n', F2)
-
-            else:
+                #print('New F:\n\n', F2)
+            else:#?random changes should be implemented here as well
+                 
                 keep=False
-        else:
+
+        elif len(Neighbors) == 0: #If no changes were made, a random change will be made
+            
+            ir = random.randint(0,p-1)
+            for i in range(p):
+                if listsumindex[i][0] not in pseudo_F:
+                    pseudo_F.pop(ir)
+                    pseudo_F.insert(ir, listsumindex[i][0])
+                    Neighbors.append(list(pseudo_F))
+            print('N(X2)',Neighbors)
+            for e in Neighbors:
+                evaluation_Neighbors.append(calculate_distance(e))
+            indexmin = evaluation_Neighbors.index(min(evaluation_Neighbors))
+            if evaluation_Neighbors[indexmin] < res_actual:
+                res_actual= evaluation_Neighbors[indexmin]
+                F2=list(Neighbors[indexmin])            
+            
             keep=False
+           
     print('Final F2', F2)
     res_f2=calculate_distance(F2)
     print('Test ObFun F2', res_f2)
@@ -214,11 +213,7 @@ def vertex_substitution():
         print('The same facilities opened after trying VS: ',Facilities)  
         return Facilities
     """
-    #print('All facilities: ', lsum)
-    #print(distances_F)
-    #print(dist_F_sorted)
-
-
+    
 #*-------------------------------------------------------------------------------------------------------------*#
 print('.txt files in directory\n')
 for file in os.listdir(dirname(os.path.realpath(__file__))):#os.path.realpath(__file__)
