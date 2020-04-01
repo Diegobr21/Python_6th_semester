@@ -114,7 +114,14 @@ def vertex_substitution():
         if listsumindex[i][0] in Facilities:
             distances_F.append(listsumindex[i])
     dist_F_sorted=sorted(distances_F, key=lambda i: i[1], reverse=True)
-    print(dist_F_sorted)
+    """
+    dist_F_noindex=[]
+    for e in distances_F:
+        dist_F_noindex.append(e[1])
+
+    print('No index',dist_F_noindex)
+    """
+
     pseudo_F=[]
     for e in Facilities:
         pseudo_F.append(e)
@@ -136,32 +143,61 @@ def vertex_substitution():
     #?------------------------
     #!2nd VS----------------------
     keep=True
+    
+    print(pseudo_F)
+    #print(lsum)
+    #print(dist_F_sorted)
     Neighbors=[]
     evaluation_Neighbors=[]
-    print(pseudo_F)
     while keep:
-        pseudo_F=list(F2)
+        #pseudo_F=list(F2)
+        Neighbors.clear()
+        evaluation_Neighbors.clear()
+        #changes=0
         for i in range(len(lsum)):
-            if lsum[i][0] not in pseudo_F and lsum[i][0] < dist_F_sorted[0][0]:
+            if lsum[i][0] not in pseudo_F and lsum[i][1] < dist_F_sorted[0][1]:
+                print('cumplido, dFs[0][1]: ', dist_F_sorted[0][1])
                 index = pseudo_F.index(dist_F_sorted[0][0])
                 pseudo_F.pop(index)
-                pseudo_F.insert(index, lsum[i][0])
-                Neighbors.append(pseudo_F)
+                pseudo_F.insert(index, lsum[i][0])                
+                print(f'{i} pseudoF:' , pseudo_F)
+                Neighbors.append(list(pseudo_F))
+                print('N(X)',Neighbors)
+                #changes+=1
+                distances_F.clear()
+                dist_F_sorted.clear()
+                for i in range(len(listsumindex)):
+                    if listsumindex[i][0] in pseudo_F:
+                        distances_F.append(listsumindex[i])
+                dist_F_sorted=sorted(distances_F, key=lambda i: i[1], reverse=True)
+                #print(dist_F_sorted)
+            #If no changes were made, a random change will be made
+            """
+            if changes < 1:
+                ir = random.randint(0,p-1)
+                pseudo_F.pop(ir)
+                for i in range(len(lsum)):
+                    if lsum[i][0] not in pseudo_F:
+                        pseudo_F.insert(ir, lsum[i][0])
+                        Neighbors.append(pseudo_F)
+                changes+=1
+            """
+                #print(dist_F_sorted)
+                #pseudo_F=list(F2)
+        if len(Neighbors) > 0:    
+            for e in Neighbors:
+                evaluation_Neighbors.append(calculate_distance(e))
+            indexmin = evaluation_Neighbors.index(min(evaluation_Neighbors))
+            if evaluation_Neighbors[indexmin] < res_actual:
+                F2=list(Neighbors[indexmin])
                 pseudo_F=list(F2)
+                #print('New F:             \n\n', F2)
 
-        for e in Neighbors:
-            evaluation_Neighbors.append(calculate_distance(e))
-        indexmin = evaluation_Neighbors.index(min(evaluation_Neighbors))
-        if evaluation_Neighbors[indexmin] < res_actual:
-            F2=list(Neighbors[indexmin])
-
-            for i in range(len(listsumindex)):
-                if listsumindex[i][0] in F2:
-                    distances_F.append(listsumindex[i])
-            dist_F_sorted=sorted(distances_F, key=lambda i: i[1], reverse=True)
+            else:
+                keep=False
         else:
             keep=False
-    print('Test F2', F2)
+    print('Final F2', F2)
     res_f2=calculate_distance(F2)
     print('Test ObFun F2', res_f2)
 
