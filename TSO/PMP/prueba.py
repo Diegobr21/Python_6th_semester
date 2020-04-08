@@ -89,7 +89,7 @@ def calculate_distance(F):
 
     return totdist
 
-def vertex_substitution():
+def vertex_substitutionBF():
     Facilities = greedy_start()
     res_actual=calculate_distance(Facilities)
     print(Facilities)
@@ -145,22 +145,25 @@ def vertex_substitution():
     while keep:
         Neighbors.clear()
         evaluation_Neighbors.clear()
-        
+        #print('(ordered) lsum:', lsum)
         for i in range(len(lsum)):
-            if lsum[i][0] not in pseudo_F and lsum[i][1] < dist_F_sorted[0][1]:
-                print('cumplido, dFs[0][1]: ', dist_F_sorted[0][1])
-                index = pseudo_F.index(dist_F_sorted[0][0])
-                pseudo_F.pop(index)
-                pseudo_F.insert(index, lsum[i][0])                
-                print(f'{i} pseudoF:' , pseudo_F)
-                Neighbors.append(list(pseudo_F))
-                print('N(X)',Neighbors)
-                distances_F.clear()
-                dist_F_sorted.clear()
-                for i in range(len(listsumindex)):
-                    if listsumindex[i][0] in pseudo_F:
-                        distances_F.append(listsumindex[i])
-                dist_F_sorted=sorted(distances_F, key=lambda i: i[1], reverse=True)
+            try:
+                if lsum[i][0] not in pseudo_F and lsum[i][1] < dist_F_sorted[0][1]:
+                    #*print(f'cumplido, dFs[0][1]: {dist_F_sorted[0][0]} = {dist_F_sorted[0][1]} ' )
+                    index = pseudo_F.index(dist_F_sorted[0][0])
+                    pseudo_F.pop(index)
+                    pseudo_F.insert(index, lsum[i][0])                
+                    #*print(f'{i} pseudoF:' , pseudo_F)
+                    Neighbors.append(list(pseudo_F))
+                    #print('N(X)',Neighbors)
+                    distances_F.clear()
+                    dist_F_sorted.clear()
+                    for i in range(len(listsumindex)):
+                        if listsumindex[i][0] in pseudo_F:
+                            distances_F.append(listsumindex[i])
+                    dist_F_sorted=sorted(distances_F, key=lambda i: i[1], reverse=True)
+            except ValueError:
+                pass
                 #print(dist_F_sorted)
             
                 #print(dist_F_sorted)
@@ -186,7 +189,7 @@ def vertex_substitution():
                     pseudo_F.pop(ir)
                     pseudo_F.insert(ir, listsumindex[i][0])
                     Neighbors.append(list(pseudo_F))
-            print('N(X2)',Neighbors)
+            #print('N(X2)',Neighbors)
             for e in Neighbors:
                 evaluation_Neighbors.append(calculate_distance(e))
             indexmin = evaluation_Neighbors.index(min(evaluation_Neighbors))
@@ -198,21 +201,69 @@ def vertex_substitution():
            
     print('Final F2', F2)
     res_f2=calculate_distance(F2)
-    print('Test ObFun F2', res_f2)
+    print('ObFun After VS with BF', res_f2)
 
     #!------------------------------
-    """
+
+    
+def vertex_substitutionFF():
+    Facilities = greedy_start()
+    res_actual=calculate_distance(Facilities)
+    print(Facilities)
+    
+    list_sum_dij=[]
+    
+    #Sum for each to facility to all customers
+    for i in range(len(dij)):
+        list_sum_dij.append( sum(dij[i])-i )
+
+    ind=[i for i in range(m)]
+    #List of sums with index
+    listsumindex= merge(ind, list_sum_dij)
+    #From smallest to greatest sum
+    lsum=sorted(listsumindex, key=lambda i: i[1], reverse=False)
+    distances_F=[]
+    for i in range(len(listsumindex)):
+        if listsumindex[i][0] in Facilities:
+            distances_F.append(listsumindex[i])
+    dist_F_sorted=sorted(distances_F, key=lambda i: i[1], reverse=True)
+
+    pseudo_F=[]
+    for e in Facilities:
+        pseudo_F.append(e)
+  
+    #?Vertex Substitution 
+    
+    for i in range(len(dist_F_sorted)):
+        for j in range(len(lsum)):
+            if lsum[j][0] not in pseudo_F and lsum[j][1] < dist_F_sorted[0][1]:
+                index=pseudo_F.index(dist_F_sorted[0][0])
+                pseudo_F.pop(index)
+                pseudo_F.insert(index, lsum[j][0])
+                if calculate_distance(pseudo_F) >= res_actual:
+                    pseudo_F.pop(index)
+                    pseudo_F.insert(index, dist_F_sorted[0][0])
+                    
+                else:
+                    distances_F.clear()
+                    dist_F_sorted.clear()
+                    for i in range(len(listsumindex)):
+                        if listsumindex[i][0] in pseudo_F:
+                            distances_F.append(listsumindex[i])
+                    dist_F_sorted=sorted(distances_F, key=lambda i: i[1], reverse=True)
+               
+                    
+    
     res_nuevo=calculate_distance(pseudo_F)   
     #print('Res: ', res_nuevo) 
     if len(set(pseudo_F)) == len(Facilities) and res_nuevo < res_actual:
-        print('Objective Function After VS: ', res_nuevo) 
-        print('After VS',pseudo_F) 
+        print('Obj. Function After VS with FF strategy: ', res_nuevo) 
+        print('After VS with FF strategy',pseudo_F) 
         return pseudo_F
     else:
         print('Could not be improved: ', res_actual)
         print('The same facilities opened after trying VS: ',Facilities)  
         return Facilities
-    """
     
 #*-------------------------------------------------------------------------------------------------------------*#
 print('.txt files in directory\n')
@@ -269,5 +320,7 @@ for e in dist_ij:
 
 print(random_start())
 
-vertex_substitution()
+vertex_substitutionBF()
+vertex_substitutionFF()
+
     
