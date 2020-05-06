@@ -441,23 +441,22 @@ for e in dist_ij:
 
 
 #*------------------------------------------Calls---------------------------------------
-#RS = random_start()
+RS = random_start()
 
 GS =greedy_start()
 
-#RBF = vertex_substitutionBF(RS[0], RS[1]) #random start
+RBF = vertex_substitutionBF(RS[0], RS[1]) #random start
 GBF = vertex_substitutionBF(GS[0], GS[1]) #greedy start
 
-#RFF = vertex_substitutionFF(RS[0], RS[1])#random start
+RFF = vertex_substitutionFF(RS[0], RS[1])#random start
 GFF = vertex_substitutionFF(GS[0], GS[1])#greedy start
 print('Time GS+BF: ',GBF[2])
 print('Time GS+FF: ',GFF[2])
 
 #print('RS+FF = ', RFF[1])
 
-"""
 filepath = 'resultados/results.txt'
 f=open(filepath, "a+")
 f.write('\n')
 f.write('%r,%r,%r,%r,%r,%r,%r,%r,%r,%r,%r,%r,%r,%r.' % (p, m, n, mu, RS[1], GS[1], RBF[1], RBF[2], GBF[1], GBF[2], RFF[1], RFF[2], GFF[1], GFF[2] ))
-"""
+
