@@ -330,7 +330,7 @@ def vertex_substitutionFF(F, resultado_actual):
     while continueFF:
         for j in range(len(lsum)):
             if lsum[j][0] not in pseudo_F and lsum[j][1] < dist_F_sorted[0][1]:
-                iterations += 1
+                #iterations += 1
                 #print(iterations)
                 index=pseudo_F.index(dist_F_sorted[0][0])
                 pseudo_F.pop(index)
@@ -340,7 +340,7 @@ def vertex_substitutionFF(F, resultado_actual):
                 if iterations > 20:
                     break;
                 """
-                if  result >= res_actual:
+                if  result >= new_r:
                     pseudo_F.pop(index)
                     pseudo_F.insert(index, dist_F_sorted[0][0])
                     
@@ -362,7 +362,8 @@ def vertex_substitutionFF(F, resultado_actual):
             #if iterations > 20:
                 #break;
                 #print(iterations)
-        continueFF = False           
+        if iterations == len(lsum) or result >= new_r:
+            continueFF = False           
     
     res_nuevo=new_r  
     #print('Res: ', res_nuevo) 
