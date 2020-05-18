@@ -31,11 +31,18 @@ def sort_by_sum(F):
     #From smallest to greatest sum
     lsum=sorted(listsumindex, key=lambda i: i[1], reverse=False)
     distances_F=[]
+    dist=[]
     for i in range(len(listsumindex)):
         if listsumindex[i][0] in F:
             distances_F.append(listsumindex[i])
     dist_F_sorted=sorted(distances_F, key=lambda i: i[1], reverse=True)
-    return dist_F_sorted, distances_F
+
+    sorted_facilities = []
+    for t in dist_F_sorted:
+        sorted_facilities.append(t[0])
+        dist.append(t[1])
+
+    return dist_F_sorted, dist, sorted_facilities
 
 
 def greedy_start():
@@ -48,6 +55,7 @@ def greedy_start():
     vmax=max(listmax)
     radius = (vmax + vmin)/2 #Greedy Start radius
     #---------------------Initial Selection----------------------------
+    start_time = time.time()  #*---Start timer---
     inside_radius=[]
     for i in range(len(dij)):
         inside_radius.append(0)
@@ -65,9 +73,10 @@ def greedy_start():
     F=[]
     for i in range(p):
         F.append(irsorted[i][0])
+    timeGS = time.time() - start_time  #*---end timer----
     gsF = calculate_distance(F)
     print('Objective function with Greedy start', gsF )
-    return F, gsF
+    return F, gsF, timeGS
 
 def calculate_distance(F):
     new_dij=[]
@@ -101,11 +110,7 @@ def calculate_distance(F):
 
     for e in list_index_in_F_closest:
         liFc.append(F[e]) #List per customer to which facility they'd go of the opened ones
-    #print(list_index_in_F_closest,'\n')
-    #print(liFc)
-    #print('****************************************************',V2)
-    #print(dij)
-    #print(list_index_closest_facility)
+    
     added = [] 
     for i in range(len(liFc)):
         #print(dij[liFc[i]][i])
@@ -120,10 +125,7 @@ def vertex_substitutionBF(F, resultado_actual):
     Facilities = F
     res_actual= resultado_actual
     print(Facilities)
-    #1)Encontrar el nodo que mas distancia añada dentro de F y tratar de cambiarlo por uno mejor 
-    #1)Puede hacer suma de distancias por facility y el que más tenga dentro de F cambiarlo por uno mejor, evaluar objective function y substituirlo en F si si
-    #2)Cambiar los peores nodos de F, por facilities mejores en suma de distancias y que no estén incluidas ya,
-    #2) evaluar si es mejor resultado(obj function), si no, repetir hasta que no sea mejor o hasta que haya dado m iteraciones 
+    
     
     list_sum_dij=[]
     
@@ -135,29 +137,25 @@ def vertex_substitutionBF(F, resultado_actual):
     #List of sums with index
     listsumindex= merge(ind, list_sum_dij)
     #From smallest to greatest sum
-    lsum=sorted(listsumindex, key=lambda i: i[1], reverse=False)
-    """
-    distances_F=[]
-    for i in range(len(listsumindex)):
-        if listsumindex[i][0] in Facilities:
-            distances_F.append(listsumindex[i])
-    dist_F_sorted=sorted(distances_F, key=lambda i: i[1], reverse=True)
-
-    """
+    lsum=sorted(listsumindex, key=lambda i: i[1], reverse=False) #[(facility, sum of its row),(),()] sorted
+  
     pseudo_F=[]
     for e in Facilities:
         pseudo_F.append(e)
-    F2=list(Facilities)
+    #F2=list(Facilities)
     
    
     
     #! Vertex Substitution----------------------
 
     Facilities_sorted = sort_by_sum(Facilities)
-    dist_F_sorted = Facilities_sorted[0]
-    distances_F = Facilities_sorted[1]
+    dist_F_sorted = Facilities_sorted[0] # (facility, distance)
+    distances_F = Facilities_sorted[1] #distances from largest to smallest
+    sorted_facilities = Facilities_sorted[2].copy() #facilities
+    worst_facility = dist_F_sorted[0][0]
+    #print(sorted_facilities)
     keep=True
-    start_time = time.time()  #---Start timer---
+    start_time = time.time()  #*---Start timer---
     
     
     
@@ -166,55 +164,60 @@ def vertex_substitutionBF(F, resultado_actual):
     while keep:
         Neighbors.clear()
         evaluation_Neighbors.clear()
+        x=0
         #print('(ordered) lsum:', lsum)
         for i in range(len(lsum)):
             try:
-                if lsum[i][0] not in pseudo_F and lsum[i][1] < dist_F_sorted[0][1]:
-                    #*print(f'cumplido, dFs[0][1]: {dist_F_sorted[0][0]} = {dist_F_sorted[0][1]} ' )
-                    index = pseudo_F.index(dist_F_sorted[0][0])
-                    pseudo_F.pop(index)
-                    pseudo_F.insert(index, lsum[i][0])                
-                    #*print(f'{i} pseudoF:' , pseudo_F)
-                    Neighbors.append(list(pseudo_F))
-                    #print('N(X)',Neighbors)
-                    distances_F.clear()
-                    dist_F_sorted.clear()
-                    """
-                    for i in range(len(listsumindex)):
-                        if listsumindex[i][0] in pseudo_F:
-                            distances_F.append(listsumindex[i])
-                    dist_F_sorted=sorted(distances_F, key=lambda i: i[1], reverse=True)
-                    """
-                    Facilities_sorted = sort_by_sum(pseudo_F)
-                    dist_F_sorted = Facilities_sorted[0]
-                    distances_F = Facilities_sorted[1]
+                if lsum[i][0] not in sorted_facilities and lsum[i][1] < distances_F[x]:
+
+                    sorted_facilities.pop(x)
+                    sorted_facilities.insert(x, lsum[i][0])
+                    Neighbors.append(list(sorted_facilities)) 
+                   
+                    if x < p-1:
+                        x+=1
+                    else:
+                        break
+                    #index = pseudo_F.index(worst_facility)
+                    #pseudo_F.pop(index)
+                    #pseudo_F.insert(index, lsum[i][0])                
+                    #Neighbors.append(list(map(lambda x: x if x != sorted_facilities[0] else lsum[i][0], 
+                    # sorted_facilities)))##pseudo_F [index] = lsum[i][0]
+                    #dist_F_sorted.pop(0)
+                    #dist_F_sorted.insert(0, lsum[i])
+                     
             except ValueError:
                 pass
-                #print(dist_F_sorted)
-            
-                #print(dist_F_sorted)
-                #pseudo_F=list(F2)
+                
         if len(Neighbors) > 0:    
             for e in Neighbors:
                 evaluation_Neighbors.append(calculate_distance(e))
             indexmin = evaluation_Neighbors.index(min(evaluation_Neighbors))
+
             if evaluation_Neighbors[indexmin] < res_actual:
                 res_actual= evaluation_Neighbors[indexmin]
-                F2=list(Neighbors[indexmin])
-                pseudo_F=list(F2)
-                #print('New F:\n\n', F2)
-            else:#?random changes should be implemented here as well?
+                #F2=list(Neighbors[indexmin])
+                pseudo_F=list(Neighbors[indexmin]) 
+                distances_F.clear()
+                dist_F_sorted.clear()                   
+                Facilities_sorted = sort_by_sum(pseudo_F)
+                dist_F_sorted = Facilities_sorted[0]
+                distances_F = Facilities_sorted[1]
+                sorted_facilities = Facilities_sorted[2].copy()
+                    
+            else:#?random changes could be implemented here as well?
                  
                 keep=False
 
-        elif len(Neighbors) == 0: #If no changes were made, a random change will be made
-            
+        elif len(Neighbors) == 0: #If no changes were made, a random change could be made...
+            """ 
             ir = random.randint(0,p-1) #index that´ll change
             for i in range(p):
                 if listsumindex[i][0] not in pseudo_F:
                     pseudo_F.pop(ir)
                     pseudo_F.insert(ir, listsumindex[i][0])
                     Neighbors.append(list(pseudo_F))
+                    
             #print('N(X2)',Neighbors)
             for e in Neighbors:
                 evaluation_Neighbors.append(calculate_distance(e))
@@ -222,74 +225,17 @@ def vertex_substitutionBF(F, resultado_actual):
             if evaluation_Neighbors[indexmin] < res_actual:
                 res_actual= evaluation_Neighbors[indexmin]
                 F2=list(Neighbors[indexmin])            
-            
+            """   
             keep=False
            
-    timeBF = time.time() - start_time
-    print('Final F2', F2)
+    timeBF = time.time() - start_time  #*---end timer----
+    print('Final F2', pseudo_F)
 
-    res_f2=calculate_distance(F2)
+    res_f2=calculate_distance(pseudo_F)
     
     print('ObFun After VS with BF', res_f2)
 
-    return F2, res_f2, timeBF 
-"""
-    sortedtupleF = sort_by_sum(pseudo_F)
-    print("Return sort_by_sum: ", sortedtupleF)
-    sortedF = []
-    for e in sortedtupleF:
-        sortedF.append(e[0])
-    print("sortedF: ",sortedF)
-    worst = sortedtupleF[0] #tuple of the worst facility in terms of added distance(worst-facility,sum)
-    print('Worst: ', worst)
-    Neighbors=[]
-    evaluation_Neighbors=[]
-    improvements = 0
-    while keep:
-        Neighbors.clear()
-        evaluation_Neighbors.clear()
-        #print('(ordered) lsum:', lsum)
-        for i in range(len(lsum)):
-            try:
-                if lsum[i][0] not in pseudo_F and lsum[i][1] < worst[1]:
-                    sortedF.pop(0)
-                    sortedF.insert(0, lsum[i][0])   
-                    #print(f'{i} pseudoF:' , sortedF)
-                    Neighbors.append(list(sortedF))
-                    sortedF.pop(0)   
-                    sortedF.insert(0, worst[0])  
-
-            except ValueError:
-                pass
-        if len(Neighbors) > 0:  
-            #print(Neighbors) 
-            for e in Neighbors: 
-                evaluation_Neighbors.append(calculate_distance(e))
-            indexmin = evaluation_Neighbors.index(min(evaluation_Neighbors))
-            
-            
-            if evaluation_Neighbors[indexmin] < res_actual:
-                improvements += 1
-                res_actual = evaluation_Neighbors[indexmin]
-                pseudo_F = list(Neighbors[indexmin]) #*Updating to the Best Found
-                sortedtupleF = sort_by_sum(pseudo_F)
-                for e in sortedtupleF:
-                    sortedF.append(e[0])
-                worst = sortedtupleF[0]
-            
-            if improvements > 25:
-                keep = False
-
-
-            else:
-                timeBF = time.time() - start_time
-                print(f'Best Result found: {pseudo_F} with obj funct: {res_actual} ')
-                keep = False
-        else:
-            print('No neighbors could be made')
-            keep = False
-    return pseudo_F, res_actual, timeBF 
-  """   
+    return pseudo_F, res_f2, timeBF 
 
 
     #!------------------------------
@@ -326,44 +272,46 @@ def vertex_substitutionFF(F, resultado_actual):
     start_time = time.time()
     new_r = res_actual
     iterations = 0
+    noimprov = 0
     continueFF = True
     while continueFF:
         for j in range(len(lsum)):
             if lsum[j][0] not in pseudo_F and lsum[j][1] < dist_F_sorted[0][1]:
-                #iterations += 1
+                iterations += 1
                 #print(iterations)
                 index=pseudo_F.index(dist_F_sorted[0][0])
                 pseudo_F.pop(index)
                 pseudo_F.insert(index, lsum[j][0])
                 result = calculate_distance(pseudo_F)
-                """
-                if iterations > 20:
-                    break;
-                """
-                if  result >= new_r:
-                    pseudo_F.pop(index)
-                    pseudo_F.insert(index, dist_F_sorted[0][0])
-                    
-                else:
+                
+                if  result < new_r:
                     new_r = result
                     #distances_F.clear()
                     dist_F_sorted.clear()
-                    """
-                    for i in range(len(listsumindex)):
-                        if listsumindex[i][0] in pseudo_F:
-                            distances_F.append(listsumindex[i])
-                    dist_F_sorted=sorted(distances_F, key=lambda i: i[1], reverse=True)
-                    """
                     Facilities_sorted = sort_by_sum(pseudo_F)
                     dist_F_sorted = Facilities_sorted[0]
                     #distances_F = Facilities_sorted[1]
+                    break                   
+                    
+                else:
+                    pseudo_F.pop(index)
+                    pseudo_F.insert(index, dist_F_sorted[0][0])
+                    noimprov +=1
+                    
             else:
                 iterations+=1
             #if iterations > 20:
                 #break;
                 #print(iterations)
-        if iterations == len(lsum) or result >= new_r:
-            continueFF = False           
+        if noimprov >= len(lsum) or result >= new_r:
+            continueFF = False      
+        
+                
+            #if iterations > 20:
+                #break;
+                #print(iterations)
+         
+                   
     
     res_nuevo=new_r  
     #print('Res: ', res_nuevo) 
@@ -444,7 +392,7 @@ for e in dist_ij:
 #*------------------------------------------Calls---------------------------------------
 RS = random_start()
 
-GS =greedy_start()
+GS = greedy_start()
 
 RBF = vertex_substitutionBF(RS[0], RS[1]) #random start
 GBF = vertex_substitutionBF(GS[0], GS[1]) #greedy start
@@ -459,5 +407,7 @@ print('Time GS+FF: ',GFF[2])
 filepath = 'resultados/results.txt'
 f=open(filepath, "a+")
 f.write('\n')
-f.write('%r,%r,%r,%r,%r,%r,%r,%r,%r,%r,%r,%r,%r,%r.' % (p, m, n, mu, RS[1], GS[1], RBF[1], RBF[2], GBF[1], GBF[2], RFF[1], RFF[2], GFF[1], GFF[2] ))
+#f.write('%r, %r' % (GS[1], GS[2]))
+f.write('%r,%r,%r,%r,%r,%r,%r,%r,%r,%r,%r,%r,%r,%r' % (p, m, n, mu, RS[1], GS[1], RBF[1], RBF[2], GBF[1], GBF[2], RFF[1], RFF[2], GFF[1], GFF[2] ))
 
+#m15 last one
